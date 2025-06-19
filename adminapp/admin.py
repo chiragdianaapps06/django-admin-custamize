@@ -237,12 +237,6 @@ class BrandAdmin(admin.ModelAdmin):
     
     
 
-# admin.site.register(Brand, BrandAdmin)
-
-# try:
-#     admin.site.unregister(Brand)
-# except NotRegistered:
-#     pass  # If not registered, just skip
 admin.site.register(Brand, BrandAdmin)
 
 

@@ -26,8 +26,11 @@ def forms(request):
             last_name = form.cleaned_data['last_name']
             password = form.cleaned_data['password']
 
-            User.objects.create_user(username=username,email=email,first_name=first_name,last_name=last_name,password=password)
+            user= User.objects.create_user(username=username,email=email,first_name=first_name,last_name=last_name,password=password)
 
+            user.is_staff = True     # ✅ Required to allow admin access
+            user.role == 'brand_admin'
+            user.save()
             return HttpResponse("window.alert(\"user creater\")")
         
 
