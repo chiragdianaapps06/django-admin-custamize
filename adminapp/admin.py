@@ -93,15 +93,19 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 class UserAdmin(BaseUserAdmin):
     list_display = ['username', 'email', 'role', 'brand']
+
+    list_filter = ['is_staff','role','brand']
     fieldsets = BaseUserAdmin.fieldsets + (
         ('Role Info', {'fields': ('role', 'brand')}),
     )
+    
+   
 
-class ColorVariantInline(admin.TabularInline):
+class ColorVariantInline(admin.StackedInline):
     model = ColorVariant
     extra = 1
 
-    list_filter = []
+    # list_filter = []
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "product" and request.user.role == "brand_admin":
@@ -169,6 +173,9 @@ class ProductAdmin(admin.ModelAdmin):
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
+
+    
 
 
 
@@ -181,6 +188,22 @@ class ColorVariantAdmin(admin.ModelAdmin):
         if request.user.role == 'brand_admin':
             return qs.filter(product__brand=request.user.brand)
         return qs
+    
+
+    def get_list_filter(self, request):
+        if request.user.is_authenticated and request.user.role == 'super_admin':
+            return ['product__brand', 'product__category', 'color']
+        return ['product__category', 'color']
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "product":
+            if request.user.is_authenticated and request.user.role == "brand_admin":
+                kwargs["queryset"] = Product.objects.filter(brand=request.user.brand)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
+
+    
+
     
 class CategoryAdmin(admin.ModelAdmin):
     
@@ -197,41 +220,41 @@ admin.site.register(ColorVariant, ColorVariantAdmin)
 
 
 # Then, conditionally register it only for superusers
-# class BrandAdmin(admin.ModelAdmin):
-
-#     def has_module_permission(self, request):
-#         return request.user.is_authenticated and request.user.role == 'super_admin'
-
-#     def has_view_permission(self, request, obj=None):
-#         return request.user.is_authenticated and request.user.role == 'super_admin' 
-
-#     def has_change_permission(self, request, obj=None):
-#         return request.user.is_authenticated and request.user.role == 'super_admin' 
-
-#     def has_add_permission(self, request):
-#         return request.user.is_authenticated and request.user.role == 'super_admin' 
-
-#     def has_delete_permission(self, request, obj=None):
-#         return request.user.is_authenticated and request.user.role == 'super_admin' 
-    
-
-# Then, conditionally register it only for superusers
 class BrandAdmin(admin.ModelAdmin):
 
     def has_module_permission(self, request):
-        return request.user.is_authenticated and request.user.is_superuser
+        return request.user.is_authenticated and request.user.role == 'super_admin'
 
     def has_view_permission(self, request, obj=None):
-        return request.user.is_authenticated and request.user.is_superuser
+        return request.user.is_authenticated and request.user.role == 'super_admin' 
 
     def has_change_permission(self, request, obj=None):
-        return request.user.is_authenticated and request.user.is_superuser
+        return request.user.is_authenticated and request.user.role == 'super_admin' 
 
     def has_add_permission(self, request):
-        return request.user.is_authenticated and request.user.is_superuser
+        return request.user.is_authenticated and request.user.role == 'super_admin' 
 
     def has_delete_permission(self, request, obj=None):
-        return request.user.is_authenticated and request.user.is_superuser 
+        return request.user.is_authenticated and request.user.role == 'super_admin' 
+    
+
+# Then, conditionally register it only for superusers
+# class BrandAdmin(admin.ModelAdmin):
+
+#     def has_module_permission(self, request):
+#         return request.user.is_authenticated and request.user.is_superuser
+
+#     def has_view_permission(self, request, obj=None):
+#         return request.user.is_authenticated and request.user.is_superuser
+
+#     def has_change_permission(self, request, obj=None):
+#         return request.user.is_authenticated and request.user.is_superuser
+
+#     def has_add_permission(self, request):
+#         return request.user.is_authenticated and request.user.is_superuser
+
+#     def has_delete_permission(self, request, obj=None):
+#         return request.user.is_authenticated and request.user.is_superuser 
 
 
     

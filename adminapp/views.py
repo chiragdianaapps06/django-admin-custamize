@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render , redirect
 from django.http import HttpResponse
 
 # Create your views here.
@@ -8,6 +8,7 @@ from  .form import ContactForm
 
 
 from django.contrib.auth import get_user_model
+
 
 User = get_user_model()
 
@@ -31,7 +32,7 @@ def forms(request):
             user.is_staff = True     # ✅ Required to allow admin access
             user.role == 'brand_admin'
             user.save()
-            return HttpResponse("window.alert(\"user creater\")")
+            return redirect('/admin/')
         
 
     else:
@@ -40,3 +41,5 @@ def forms(request):
 
                         
     return render(request,'index.html',{'form' :form})
+
+
