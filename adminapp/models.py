@@ -50,7 +50,7 @@ class User(AbstractUser):
         ('brand_admin', 'Brand Admin'),
     )
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='brand_admin')
-    brand = models.ForeignKey(Brand, null=True, blank=True, on_delete=models.SET_NULL)
+    brand = models.ForeignKey(Brand, null=True, blank=True, on_delete=models.CASCADE)
 
 
 

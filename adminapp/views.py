@@ -5,9 +5,12 @@ from django.http import HttpResponse
 
 from  .form import ContactForm
 # from  django.contrib.auth.models import User
+from django.contrib.auth.models import Group
 
 
 from django.contrib.auth import get_user_model
+
+from .models import Brand
 
 
 User = get_user_model()
@@ -26,13 +29,19 @@ def forms(request):
             first_name = form.cleaned_data['first_name']
             last_name = form.cleaned_data['last_name']
             password = form.cleaned_data['password']
+            brandname = form.cleaned_data['brandname']
           
+            brandname = form.cleaned_data['brandname']
+            brand_instance, created = Brand.objects.get_or_create(name=brandname)
 
             user= User.objects.create_user(username=username,email=email,first_name=first_name,last_name=last_name,password=password,)
 
             user.is_staff = True     # ✅ Required to allow admin access
-            user.role == 'brand_admin'
+            user.role = 'brand_admin'
+            user.brand = brand_instance 
             # user.groups == 'brand_admin'
+            group, created = Group.objects.get_or_create(name='brand_Admin')
+            user.groups.add(group)
             user.save()
             
             return redirect('/admin/')
