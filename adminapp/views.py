@@ -26,12 +26,15 @@ def forms(request):
             first_name = form.cleaned_data['first_name']
             last_name = form.cleaned_data['last_name']
             password = form.cleaned_data['password']
+          
 
-            user= User.objects.create_user(username=username,email=email,first_name=first_name,last_name=last_name,password=password)
+            user= User.objects.create_user(username=username,email=email,first_name=first_name,last_name=last_name,password=password,)
 
             user.is_staff = True     # ✅ Required to allow admin access
             user.role == 'brand_admin'
+            # user.groups == 'brand_admin'
             user.save()
+            
             return redirect('/admin/')
         
 
@@ -41,5 +44,17 @@ def forms(request):
 
                         
     return render(request,'index.html',{'form' :form})
+
+from .form import StudentForm
+def home(request):
+  
+    if request.method == 'POST':
+        form = StudentForm(request.POST)
+        if form.is_valid():
+            form.save()
+    else:
+        form = StudentForm()
+    return render(request, 'home.html', {'form': form})
+
 
 

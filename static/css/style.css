@@ -50,6 +50,7 @@ body {
 /* Input fields */
 .form input[type="text"],
 .form input[type="email"],
+.form input[type="number"],
 .form input[type="password"] {
     width: 100%;
     padding: 10px;
@@ -58,6 +59,7 @@ body {
     font-size: 1rem;
     transition: 0.2s border ease;
 }
+
 
 .form input:focus {
     border-color: #007bff;
